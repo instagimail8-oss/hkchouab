@@ -18,26 +18,14 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
-    - name: Generate Gradle Wrapper
-      run: mvn -N io.takari:maven:wrapper || gradle wrapper || npx gradle-wrapper-generator || true
-
-    - name: Create Gradle Wrapper files manually if missing
-      run: |
-        if [ ! -f ./gradlew ]; then
-          gradle init --type basic --automation-language groovy --dsl groov --test-framework none --project-name FruitNinjaAutoBot --non-interactive || true
-        fi
-
-    - name: Setup Gradle Wrapper
+    - name: Setup Gradle
       uses: gradle/actions/setup-gradle@v3
 
-    - name: Build Debug APK
+    - name: Generate Wrapper and Build APK
       run: |
-        if [ -f ./gradlew ]; then
-          chmod +x gradlew
-          ./gradlew assembleDebug
-        else
-          gradle :app:assembleDebug
-        fi
+        gradle wrapper --gradle-version 8.5
+        chmod +x gradlew
+        ./gradlew assembleDebug
 
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
